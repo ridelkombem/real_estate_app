@@ -13,6 +13,12 @@ class RealEstateModel {
     heading = json['Heading'];
     relatedTopics = json['RelatedTopics'];
     abstractUrl = json['AbstractURL'];
+    if (json['RelatedTopics'] != null) {
+      relatedTopics = <RelatedTopics>[];
+      (json['RelatedTopics'] as List).forEach((e) {
+        relatedTopics!.add(RelatedTopics.fromJson(e));
+      });
+    }
   }
 }
 
@@ -23,28 +29,34 @@ class RelatedTopics {
 
   String? text;
 
-  List<Icon>? icon;
+  List<Iconss>? icon;
   RelatedTopics(this.firstUrl, this.result, this.text, this.icon);
   RelatedTopics.fromJson(Map<String, dynamic> json) {
     firstUrl = json['FirstURL'];
     result = json['Result'];
     text = json['Text'];
     icon = json['Icon'];
+    if (json['Icon'] != null) {
+      icon = <Iconss>[];
+      (json['Icon'] as List).forEach((e) {
+        icon!.add(Iconss.fromJson(e));
+      });
+    }
   }
 }
 
-class Icon {
+class Iconss {
   double? height;
 
   String? url;
 
   double? width;
-  Icon(
+  Iconss(
     this.height,
     this.url,
     this.width,
   );
-  Icon.fromJson(Map<String, dynamic> json) {
+  Iconss.fromJson(Map<String, dynamic> json) {
     url = json['URL'];
     height = json['Height'];
     width = json['Width'];
