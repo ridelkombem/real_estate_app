@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:real_estate_final_app/screens/search_screen.dart';
 
 void main() {

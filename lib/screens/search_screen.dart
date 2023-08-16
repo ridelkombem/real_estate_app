@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:real_estate_final_app/model/real_estate_model.dart';
+
+import 'package:real_estate_final_app/screens/detail_screen.dart';
+
+import '../model/real_estate_model.dart';
+
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -21,7 +26,7 @@ class _SearchScreenState extends State<SearchScreen> {
     var properties = <RelatedTopics>[];
     if (response.statusCode == 200) {
       var propertiesJson = json.decode(response.body);
-      for (var propertyJson in propertiesJson) {
+      for (var propertyJson in propertiesJson["RelatedTopics"]) {
         properties.add(RelatedTopics.fromJson(propertyJson));
       }
     }
@@ -51,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: DataSearch());
+                showSearch(context: context, delegate: DataSearch(_properties));
               },
               icon: const Icon(Icons.search))
         ],
@@ -62,13 +67,14 @@ class _SearchScreenState extends State<SearchScreen> {
 }
 
 class DataSearch extends SearchDelegate {
-  final cities = ['Dallas', 'Princeton', 'Irving', 'Carrolton', 'Minnesota'];
+  final List<RelatedTopics> props;
 
-  final recentCities = [
-    'Princeton',
-    'Irving',
-    'Carrolton',
-  ];
+  DataSearch(this.props);
+
+  // final cities = ['Dallas', 'Princeton', 'Irving', 'Carrolton', 'Minnesota'];
+
+  List<RelatedTopics> recentCities = <RelatedTopics>[];
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -108,8 +114,9 @@ class DataSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty ? recentCities : cities;
-    // .where((p) => p.startsWith(query)).toList();
+    final suggestionList = query.isEmpty && recentCities.isNotEmpty
+        ? recentCities
+        : props.where((p) => p.firstUrl.toString().contains(query)).toList();
     return ListView.builder(
         itemBuilder: ((context, index) => Card(
               child: Padding(
@@ -118,24 +125,39 @@ class DataSearch extends SearchDelegate {
                 ),
                 child: ListTile(
                     onTap: () {
-                      showResults(context);
+                      // showResults(context);
+
+                      recentCities.add(suggestionList[index]);
+
+                      Navigator.of(context)
+                          .push(CupertinoPageRoute(builder: (context) {
+                        return RealEstateDetailScreenNew(
+                          selectedProperty: suggestionList[index],
+                        );
+                      }));
                     },
                     leading: const Icon(Icons.location_city),
                     title: RichText(
                         text: TextSpan(
-                            text: suggestionList[index].substring(
-                              0,
-                              query.length,
-                            ),
+                            text: suggestionList[index].firstUrl.toString()
+                            // .substring(
+                            //   0,
+                            //   query.length
+                            //   ,
+                            // )
+                            ,
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                             children: [
                           TextSpan(
-                              text: suggestionList[index].substring(
-                                query.length,
-                              ),
+                              text: suggestionList[index]
+                                  .firstUrl
+                                  .toString()
+                                  .substring(
+                                    query.length,
+                                  ),
                               style: const TextStyle(color: Colors.grey))
                         ]))),
               ),

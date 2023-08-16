@@ -29,28 +29,28 @@ class RelatedTopics {
 
   String? text;
 
-  List<Iconss>? icon;
+  Iconss? icon;
   RelatedTopics(this.firstUrl, this.result, this.text, this.icon);
   RelatedTopics.fromJson(Map<String, dynamic> json) {
     firstUrl = json['FirstURL'];
     result = json['Result'];
     text = json['Text'];
-    icon = json['Icon'];
-    if (json['Icon'] != null) {
-      icon = <Iconss>[];
-      (json['Icon'] as List).forEach((e) {
-        icon!.add(Iconss.fromJson(e));
-      });
-    }
+    icon = Iconss.fromJson(json['Icon']);
+    // if (json['Icon'] != null) {
+    //   icon = <Iconss>[];
+    //   (json['Icon'] as List).forEach((e) {
+    //     icon!.add(Iconss.fromJson(e));
+    //   });
+    // }
   }
 }
 
 class Iconss {
-  double? height;
+  String? height;
 
-  String? url;
+  String? url = "";
 
-  double? width;
+  String? width;
   Iconss(
     this.height,
     this.url,
